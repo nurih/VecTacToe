@@ -6,11 +6,7 @@ const WINNING_LINES = [
 ];
 
 const EMPTY_CELL_SYMBOL = "⬚";
-const UNPLAYED_CELL_ID = 100
 
-function winnerSymbol(winner) {
-  return { 'X': 1, 'O': 2, null: 0 }[winner]
-}
 
 /**
  * Creates an embedding
@@ -21,7 +17,7 @@ function winnerSymbol(winner) {
  */
 export function createEmbedding(moves) {
   const paddedMoves = moves.slice(0, 9);
-  
+
   while (paddedMoves.length < 9) {
     paddedMoves.push(0);
   }
@@ -118,6 +114,21 @@ const switchPlayer = (playerSymbol) => playerSymbol === 'X' ? 'O' : 'X';
  */
 export function simulateGame(moves) {
   // Simulate a game given a sequence of moves to verify the result.
+  const cells = buildBoard(moves);
+
+  const winner = judge(cells, moves.at(-1));
+
+  const vector = createEmbedding(moves)
+  const board = cells.join('');
+  return { board, winner, vector };
+}
+
+/**
+ * 
+ * @param {number[]} moves The cell play sequence
+ * @returns {Array<'X'|'O'|'⬚'>} An array of X's, O's, or "⬚" characters.
+ */
+export function buildBoard(moves) {
   const board = Array(9).fill(EMPTY_CELL_SYMBOL);
   let currentPlayer = 'X';
 
@@ -125,13 +136,41 @@ export function simulateGame(moves) {
     board[move] = currentPlayer;
     currentPlayer = switchPlayer(currentPlayer);
   }
-
-  const winner = judge(board, moves.at(-1));
-
-  const vector = createEmbedding(moves)
-  return { board, winner, vector };
+  return board;
 }
 
+/** 
+ * Builds a MongoDB vector search query
+ * 
+ * @param {number[]} moves The sequence of cells played
+ * @returns MongoDB Aggregation pipeline query.
+ */
+export function buildVectorSearchQuery(moves) {
+  const queryVector = createEmbedding(moves);
+
+  return [
+    {
+      $vectorSearch: {
+        index: "vectactoeIdx",
+        path: "vector",
+        queryVector: queryVector,
+        numCandidates: 120,
+        limit: 12
+      }
+    },
+    {
+      '$project': {
+        _id: 0,
+        board: 1,
+        winner: 1,
+        score: {
+          '$meta': 'vectorSearchScore'
+        }
+      }
+    }
+  ]
+
+}
 
 
 

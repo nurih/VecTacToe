@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { MongoClient } from 'mongodb';
-import { generateAllTicTacToeGames, simulateGame, createEmbedding } from './src/VecTacToe';
+import { generateAllTicTacToeGames, simulateGame, createEmbedding, buildVectorSearchQuery, buildBoard } from './src/VecTacToe';
 
 const DATASET_FILE_PATH = './.dataset.json';
 
@@ -24,25 +24,33 @@ const getSimulations = () => {
   return simulations;
 }
 
-async function main() {
-  try {
-    // Establish a connection to MongoDB with error handling
-    if (!process.env.MONGO_URL) {
-      console.error('MONGO_URL environment variable is not set.');
-      return;
-    }
+const getCollection = async () => {
+  if(collection) return collection;
+  if (!process.env.MONGO_URL) {
+    console.error('MONGO_URL environment variable is not set.');
+    process.exit(1)
+  }
 
+  try {
     client = new MongoClient(process.env.MONGO_URL);
     await client.connect();
-    const db = client.db();
-    collection = db.collection("vec_tac_toe");
-    console.log('Connected to MongoDB successfully.');
+    collection = (client.db()).collection("vec_tac_toe");
+
+    console.log('Connected to MongoDB', collection.namespace);
+
+    return collection;
+  }
+  catch (err) {
+    console.error('Failed connecting', err)
+    process.exit(1)
+  }
+}
+async function main() {
+  try {
 
     if (process.argv.some(arg => ['-l', '--load'].includes(arg.toLocaleLowerCase()))) {
       console.log('Loading simulations from file.')
       simulations = JSON.parse(fs.readFileSync(DATASET_FILE_PATH));
-    } else {
-      console.log('Calculating simulations from all possible games.')
     }
 
     for (const arg of process.argv) {
@@ -84,36 +92,18 @@ async function runQuery() {
     console.log(`You typed: ${line}`);
     const numbers = line.split(/[^\d]+/).map(c => Number(c)).filter(d => Number.isInteger(d));
     moves = [...new Set(numbers)];
+
+    console.log('Moves', JSON.stringify(moves));
+
+    printBoard(buildBoard(moves).join(''))
+
     break;
   }
 
-  // Corrected logic to properly assign and log the query vector
-  const queryVector = createEmbedding(moves);
-  console.log('Query Vector:', queryVector.join(''));
-  console.log(JSON.stringify(moves));
-
-  // Corrected the collection reference from db.vec_tac_toe to the global collection variable
-  const queryResult = await collection.aggregate([
-    {
-      "$vectorSearch": {
-        "index": "vectactoeIdx",
-        "path": "vector",
-        "queryVector": queryVector,
-        "numCandidates": 120,
-        "limit": 12
-      }
-    },
-    {
-      '$project': {
-        '_id': 0,
-        'board': 1,
-        'winner': 1,
-        'score': {
-          '$meta': 'vectorSearchScore'
-        }
-      }
-    }
-  ]).toArray();
+  const pipeline = buildVectorSearchQuery(moves);
+  console.log('Query Vector:', pipeline[0].$vectorSearch.queryVector.join(''));
+  await getCollection();
+  const queryResult = await collection.aggregate(pipeline).toArray();
 
   console.log(queryResult);
 }
@@ -131,15 +121,19 @@ function example(allGames, count) {
   for (let i = 0; i < count; i++) {
     const idx = Math.floor(Math.random() * allGames.length);
     const { board, winner, vector } = simulateGame(allGames[idx]);
-    const winnerText = winner ? `${winner}` : 'D';
-    console.log(`${board.slice(0, 3)}`)
-    console.log(`${board.slice(3, 6)}`)
-    console.log(`${board.slice(6, 10)}`);
-    console.log(`#${idx + 1} ${winnerText}: ${vector}`);
+    const winnerText = winner ? `${winner}'s` : 'Tie';
+    printBoard(board);
+    console.log(`#${idx + 1} ${winnerText}: ${vector.join('')}`);
   }
 }
 
-function printGameStats(allGames) {  
+function printBoard(board) {
+  console.log(`\t${board.slice(0, 3).split('')}`);
+  console.log(`\t${board.slice(3, 6).split('')}`);
+  console.log(`\t${board.slice(6, 9).split('')}`);
+}
+
+function printGameStats(allGames) {
   console.log(`${allGames.length} games in consideration`);
   const gameLengths = {};
   for (const game of allGames) {
@@ -157,6 +151,7 @@ function printGameStats(allGames) {
 }
 
 async function uploadToMongoDB(simulations, batchSize) {
+  await getCollection();
   for (let i = 0; i < simulations.length; i += batchSize) {
     const batch = simulations.slice(i, i + batchSize)
     try {
@@ -172,7 +167,8 @@ async function uploadToMongoDB(simulations, batchSize) {
 async function createVectorIndex() {
   const name = 'vectactoeIdx';
   const similarity = 'dotProduct';
-  console.log(`Creating vector index "${name}" with similarity "${similarity}"`);
+  await getCollection();
+  console.log(`Creating vector index "${name}" with similarity "${similarity}" on ${collection.namespace}`);
   await collection.createSearchIndex({
     name: `${name}`,
     type: "vectorSearch",
@@ -186,7 +182,7 @@ async function createVectorIndex() {
           "type": "vector"
         },
         {
-          "path": "winner",
+          "path": "board",
           "type": "filter"
         }
       ]
