@@ -1,6 +1,6 @@
 {
-  "name": "bun-react-template",
-  "version": "0.1.0",
+  "name": "vec-tac-toe",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "bun-plugin-tailwind": "^0.0.15",
+    "mongodb": "^6.19.0",
     "react": "^19",
     "react-dom": "^19",
     "tailwindcss": "^4.1.11"

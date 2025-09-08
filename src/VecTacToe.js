@@ -12,10 +12,27 @@ function winnerSymbol(winner) {
   return { 'X': 1, 'O': 2, null: 0 }[winner]
 }
 
-function encodeAsVector(arr, winner) {
-  const fillers = Array(Math.max(0, (9 - arr.length))).fill(UNPLAYED_CELL_ID);
-  return [...arr, ...fillers, winnerSymbol(winner)];
-};
+/**
+ * Creates an embedding
+ * 
+ * Encodes the moves for this game as a vector.
+ * @param {Array<Number>} moves The list of moves. Each element is the cell the move has set.
+ * @returns Encoded array of fixed length
+ */
+export function createEmbedding(moves) {
+  const paddedMoves = moves.slice(0, 9);
+  
+  while (paddedMoves.length < 9) {
+    paddedMoves.push(0);
+  }
+
+  const oneHot = (n) => Array.from({ length: 9 }, (_, i) => (i === n ? 1 : 0));
+
+  // Generate an array of one-hot vectors and flatten it.
+  const embedding = paddedMoves.flatMap(move => oneHot(move));
+
+  return embedding;
+}
 
 
 /**
@@ -111,7 +128,7 @@ export function simulateGame(moves) {
 
   const winner = judge(board, moves.at(-1));
 
-  const vector = encodeAsVector(moves, winner)
+  const vector = createEmbedding(moves)
   return { board, winner, vector };
 }
 
