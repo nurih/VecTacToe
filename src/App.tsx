@@ -75,7 +75,7 @@ export function App() {
       </div>
 
       <div className="w-full max-w-4xl mx-auto">
-        <h1 className="text-5xl font-bold text-center mb-4 text-cyan-400">Tic-Tac-Toe</h1>
+        <h1 className="text-5xl font-bold text-center mb-4 text-cyan-400">Vector-Tac-Toe</h1>
         <div className="flex justify-center items-start space-x-8 p-4 w-full">
           <Board
             sequence={moves}

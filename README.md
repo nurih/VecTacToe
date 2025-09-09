@@ -2,6 +2,8 @@
 
 This application demonstrates using vector search for getting tic-tac-toe next move advice.
 
+![Screenshot](screenshot.jpeg)
+
 ## How Does it Work?
 
 The application uses a database that store all possible final game board states, alongside the winner of that game.
