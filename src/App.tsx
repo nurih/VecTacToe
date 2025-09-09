@@ -3,15 +3,23 @@ import { checkWinner } from './components/VecTacToe';
 import { Board } from './components/Board';
 import { Transcript } from './components/Transcript';
 import { GameStatus } from './components/GameStatus';
+import { Suggestion } from './components/Suggestion';
+import { type Player, type Move, opposingPlayer } from './VecTacToe';
 
 
 export function App() {
-  const [moves, setMoves] = useState(Array(9).fill(null));
-  const [plays, setPlays] = useState<{ cellId: number, player: string }[]>([]);
-  const [player, setPlayer] = useState('X');
-  const [winner, setWinner] = useState(null);
+  const [moves, setMoves] = useState<Array<Player>>(Array(9).fill(null));
+  type Play = {
+    cellId: Move;
+    player: Player;
+  };
 
-  const handleCellClick = (cellId: number) => {
+  const [plays, setPlays] = useState<Play[]>([]);
+  const [player, setPlayer] = useState<Player>('X');
+  const [winner, setWinner] = useState<Player | null>(null);
+  const [advice, setAdvice] = useState<any>(null);
+
+  const handleCellClick = async (cellId: Move) => {
     // Prevent move if the cell is already filled or if there's a winner
     if (moves[cellId] || winner) {
       return;
@@ -20,14 +28,18 @@ export function App() {
     const newMoves = [...moves];
     newMoves[cellId] = player;
     setMoves(newMoves);
-    setPlays([...plays, { cellId, player }])
+    const newPlays = [...plays, { cellId, player }];
+    setPlays(newPlays)
 
     const newWinner = checkWinner(newMoves, cellId);
     if (newWinner) {
+      // game won, over.
       setWinner(newWinner);
     } else {
       // Switch to the next player
-      setPlayer(player === 'X' ? 'O' : 'X');
+      console.log('No winner. Switching players.')
+      setPlayer(opposingPlayer(player));
+      await getSuggestions(newPlays)
     }
   };
 
@@ -37,6 +49,17 @@ export function App() {
     setPlayer('X');
     setWinner(null);
   };
+
+  async function getSuggestions(plays: Play[]) {    
+    
+    if (plays?.length < 3) return;
+
+    const response = await fetch(`/api/game/${plays.map(p => String(p.cellId)).join('')}`)
+    if (response.ok) {
+      const data = await response.json();
+      setAdvice(data)
+    }
+  }
 
   return (
     <div className="bg-gray-900 text-white min-h-screen 
@@ -64,6 +87,9 @@ export function App() {
         </div>
         <GameStatus winner={winner} moves={moves} player={player}></GameStatus>
       </div>
+
+      <Suggestion advice={advice}></Suggestion>
     </div>
   );
 }
+

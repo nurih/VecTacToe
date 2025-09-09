@@ -25,7 +25,7 @@ const getSimulations = () => {
 }
 
 const getCollection = async () => {
-  if(collection) return collection;
+  if (collection) return collection;
   if (!process.env.MONGO_URL) {
     console.error('MONGO_URL environment variable is not set.');
     process.exit(1)
@@ -70,7 +70,7 @@ async function main() {
       if (['--idx'].includes(arg.toLocaleLowerCase())) {
         await createVectorIndex()
       }
-      if (['-q'].includes(arg.toLocaleLowerCase())) {
+      if (['-q', '--query'].includes(arg.toLocaleLowerCase())) {
         await runQuery();
       }
     }
