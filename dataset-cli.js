@@ -26,13 +26,13 @@ const getSimulations = () => {
 
 const getCollection = async () => {
   if (collection) return collection;
-  if (!process.env.MONGO_URL) {
-    console.error('MONGO_URL environment variable is not set.');
+  if (!process.env.VECTACTOE_MONGO_URL) {
+    console.error('VECTACTOE_MONGO_URL environment variable is not set.');
     process.exit(1)
   }
 
   try {
-    client = new MongoClient(process.env.MONGO_URL);
+    client = new MongoClient(process.env.VECTACTOE_MONGO_URL);
     await client.connect();
     collection = (client.db()).collection("vec_tac_toe");
 
