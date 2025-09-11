@@ -4,6 +4,8 @@ This application demonstrates using vector search for getting tic-tac-toe next m
 
 ![Screenshot](screenshot.jpeg)
 
+See it running [live here](https://vectactoe.onrender.com/).
+
 ## How Does it Work?
 
 The application uses a database that store all possible final game board states, alongside the winner of that game.
