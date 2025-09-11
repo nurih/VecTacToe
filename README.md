@@ -43,7 +43,8 @@ bun ./dataset-cli.js --save
 
 The above generates a local file with a dump of all possible boards that end up in a win or tie.
 
-To upload the dataset to MongoDB, you must first set the environment variable `MONGO_URL` to the URL of your atlas cluster.
+To upload the dataset to MongoDB, you must first set the environment variable `VECTACTOE_MONGO_URL` to the URL of your atlas cluster (see below for local setup).
+
 Make sure to have a database name at the end of the url. For example `https://<credentials>@cluster1.abcd.mongodb.net/mydb` would be using the `mydb` database on your cluster. The collection is hard coded to `vec_tac_toe`.
 
 Upload the data to your collection
@@ -99,3 +100,36 @@ _ _ O
 The program will use this play sequence to dig up compatible plays that resulted in a win or tie, favoring the current player winning.
 
 It does so by composing a vector search query over stored legal game plays, then attempting to identify best move among results.
+
+## Local Atlas Setup
+If you want to run the application locally, you can use the following docker container:
+mongodb/mongodb-atlas-local:8.0
+
+.e.g.
+```shell
+docker run -p 27017:27017 mongodb/mongodb-atlas-local:8.0
+```
+
+You can then connect to it by setting the environment variable with the connection string:
+```shell
+export VECTACTOE_MONGO_URL="mongodb://localhost:27017/VecTacToe?directConnection=true"
+``` 
+
+
+### Atlas Local Docker Compose for Persistence
+You can also use the included docker-compose file to run Atlas Local.
+
+```shell
+docker compose up -d
+```
+This will start Atlas Local on port 27025 (by default), and keep the data when stopped or started.
+
+You can then connect to it by setting the environment variable with the connection string:
+```shell
+export VECTACTOE_MONGO_URL="mongodb://localhost:27025/VecTacToe?directConnection=true"
+```
+
+If you are on a Mac using ZSH you can also add the above line to your `.zshrc` file to make it permanent:
+```shell
+echo 'export VECTACTOE_MONGO_URL="mongodb://localhost:27025/VecTacToe?directConnection=true"' >> ~/.zshrc
+```
