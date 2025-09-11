@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 import { buildBoard, buildVectorSearchQuery, canBe, pickNextMove, type Board , type Move, type Possiblity} from "./VecTacToe";
 
-const client = new MongoClient(process.env.MONGO_URL!);
+const client = new MongoClient(process.env.VECTACTOE_MONGO_URL!);
 
 type Moves = Move[]
 
