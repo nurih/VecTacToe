@@ -19,6 +19,24 @@ Candidates are ranked and picked based on:
 
 > There are better ways to absolutely guarantee a win in this game than using vector search. But are they fun?
 
+
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+sequenceDiagram
+  actor u as User
+  participant s as Server
+  participant m as Atlas Database
+
+  u ->> s: Place `X` or `O` in empty square
+  note over s: Encode game board as an embedding
+  s -->> m: Use embedding to 1/4 million possible games
+  m -->> s: Candidate similar games
+  s->>s: Pick top candidate
+  s -->> u : Next move advice
+
+
+```
+
 ## Usage
 
 The app is written in JavaScript and TypeScript.
