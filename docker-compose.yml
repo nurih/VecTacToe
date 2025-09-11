@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongo-atlas-vec-tac-toe:
-    image: mongodb/mongodb-atlas-local:8.0
+    image: mongodb/mongodb-atlas-local:8.0.13
     container_name: mongo-atlas-local
     restart: unless-stopped
     ports:
