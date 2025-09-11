@@ -11,15 +11,14 @@ export function MiniBoard({ board }: MiniBoardProps) {
     gridTemplateRows: 'repeat(3, 1fr)',
     width: '32px',
     height: '32px',
-    border: '1px solid #999',
+    backgroundColor: '#404060',
     boxSizing: 'border-box',
   };
 
   const cellStyle: React.CSSProperties = {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
-    border: '0.5px solid #ddd',
+    alignItems: 'center',    
     boxSizing: 'border-box',
     fontSize: '10px',
     lineHeight: 1,

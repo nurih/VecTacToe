@@ -192,8 +192,8 @@ export function buildVectorSearchQuery(moves: number[]): MongoAggregationPipelin
         index: "vectactoeIdx",
         path: "vector",
         queryVector: queryVector,
-        numCandidates: 120,
-        limit: 12
+        numCandidates: 256,
+        limit: 16
       }
     },
     {

@@ -57,7 +57,7 @@ export function App() {
   };
 
   function undoLastMove(cellId: number) {
-    console.log(`Mod: ${moves} ${typeof moves} \n ${plays}`);
+    
     moves[cellId] = null;
     setPlays(plays.slice(0, -1));
     setMoves(moves);
