@@ -1,5 +1,5 @@
 import { Cell } from './Cell';
-import { useState } from 'react'
+
 /**
  * TicTacToeBoard Component
  * @param {object} props
@@ -20,7 +20,8 @@ export function Board({ sequence, player, winner, onCellClick }) {
           key={index}
           value={value}
           onClick={() => onCellClick(index)}
-          player={player} />
+          player={player}
+          offset={index} />
       ))}
     </div>
   );
