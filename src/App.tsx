@@ -4,6 +4,7 @@ import { Board } from './components/Board';
 import { Transcript } from './components/Transcript';
 import { GameStatus } from './components/GameStatus';
 import { Suggestion } from './components/Suggestion';
+import { Help } from './components/Help';
 import { type Player, type Move, opposingPlayer } from './VecTacToe';
 
 
@@ -50,8 +51,8 @@ export function App() {
     setWinner(null);
   };
 
-  async function getSuggestions(plays: Play[]) {    
-    
+  async function getSuggestions(plays: Play[]) {
+
     if (plays?.length < 3) return;
 
     const response = await fetch(`/api/game/${plays.map(p => String(p.cellId)).join('')}`)
@@ -87,8 +88,11 @@ export function App() {
         </div>
         <GameStatus winner={winner} moves={moves} player={player}></GameStatus>
       </div>
+      <div>
 
-      <Suggestion advice={advice}></Suggestion>
+        <Suggestion advice={advice}></Suggestion>
+      </div>
+      <div><Help></Help></div>
     </div>
   );
 }
