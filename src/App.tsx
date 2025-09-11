@@ -4,22 +4,28 @@ import { Board } from './components/Board';
 import { Transcript } from './components/Transcript';
 import { GameStatus } from './components/GameStatus';
 import { Suggestion } from './components/Suggestion';
+import { Help } from './components/Help';
 import { type Player, type Move, opposingPlayer } from './VecTacToe';
 
 
 export function App() {
-  const [moves, setMoves] = useState<Array<Player>>(Array(9).fill(null));
   type Play = {
     cellId: Move;
     player: Player;
   };
 
+  const [moves, setMoves] = useState<Array<Player>>(Array(9).fill(null));
   const [plays, setPlays] = useState<Play[]>([]);
   const [player, setPlayer] = useState<Player>('X');
   const [winner, setWinner] = useState<Player | null>(null);
   const [advice, setAdvice] = useState<any>(null);
 
   const handleCellClick = async (cellId: Move) => {
+
+    if (plays.length && plays.at(-1)?.cellId === cellId) {
+      undoLastMove(cellId);
+      return;
+    }
     // Prevent move if the cell is already filled or if there's a winner
     if (moves[cellId] || winner) {
       return;
@@ -50,8 +56,16 @@ export function App() {
     setWinner(null);
   };
 
-  async function getSuggestions(plays: Play[]) {    
-    
+  function undoLastMove(cellId: number) {
+    console.log(`Mod: ${moves} ${typeof moves} \n ${plays}`);
+    moves[cellId] = null;
+    setPlays(plays.slice(0, -1));
+    setMoves(moves);
+    setPlayer(opposingPlayer(player));
+  }
+
+  async function getSuggestions(plays: Play[]) {
+
     if (plays?.length < 3) return;
 
     const response = await fetch(`/api/game/${plays.map(p => String(p.cellId)).join('')}`)
@@ -87,8 +101,11 @@ export function App() {
         </div>
         <GameStatus winner={winner} moves={moves} player={player}></GameStatus>
       </div>
+      <div>
 
-      <Suggestion advice={advice}></Suggestion>
+        <Suggestion advice={advice}></Suggestion>
+      </div>
+      <div><Help></Help></div>
     </div>
   );
 }

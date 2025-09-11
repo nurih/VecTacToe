@@ -4,6 +4,8 @@ This application demonstrates using vector search for getting tic-tac-toe next m
 
 ![Screenshot](screenshot.jpeg)
 
+See it running [live here](https://vectactoe.onrender.com/).
+
 ## How Does it Work?
 
 The application uses a database that store all possible final game board states, alongside the winner of that game.
@@ -18,6 +20,24 @@ Candidates are ranked and picked based on:
 1.If no possible win or block move can be made, and empty cell is chosen at random
 
 > There are better ways to absolutely guarantee a win in this game than using vector search. But are they fun?
+
+
+```mermaid
+%%{init: {'theme': 'forest'}}%%
+sequenceDiagram
+  actor u as User
+  participant s as Server
+  participant m as Atlas Database
+
+  u ->> s: Place `X` or `O` in empty square
+  note over s: Encode game board as an embedding
+  s -->> m: Use embedding to 1/4 million possible games
+  m -->> s: Candidate similar games
+  s->>s: Pick top candidate
+  s -->> u : Next move advice
+
+
+```
 
 ## Usage
 
