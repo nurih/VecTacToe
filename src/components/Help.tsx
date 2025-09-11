@@ -35,6 +35,7 @@ export function Help() {
             <li>
               Vec Tac Toe will suggest a move among the candidates found.
             </li>
+            <li>Click the last cell played to undo the move.</li>
           </ol>
           <p className="text-green-200 text-lg">Suggestions will start appearing after 3 moves have been played.
           </p>
