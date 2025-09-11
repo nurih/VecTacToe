@@ -1,6 +1,8 @@
 
-export function Suggestion({ advice }) {
+import { MiniBoard } from "./MiniBoard";
 
+export function Suggestion({ advice }) {
+  console.log(JSON.stringify(advice))
   return advice ? (
     <div className="text-start font-semibold text-green-400 w-full">
       <div className="m-2">✨ Play cell {advice?.suggestion.move}, thinking "{advice?.suggestion.strategy}"</div>
@@ -8,7 +10,7 @@ export function Suggestion({ advice }) {
         {advice.possibilities.map((p, i) => (
           <li id={i} className="border-b-1 border-b-gray-600">
             <div className="text-start flex">
-              <span className="flex-1 text-sm font-mono p-2">{p.board}</span>
+              <MiniBoard board={p.board}></MiniBoard>
               <span className="flex-1 text-m p-2"> {p.winner ? `🏆 ${p.winner}` : "⚖️"}</span>
               <span className="flex-1 text-m p-2"> {p.playable ? "🗹" : "⮾"}</span>
               <span className="flex-1 text-sm p-2">Rank {p.score}</span>
