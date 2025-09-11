@@ -122,14 +122,14 @@ You can also use the included docker-compose file to run Atlas Local.
 ```shell
 docker compose up -d
 ```
-This will start Atlas Local on port 27025 (by default), and keep the data when stopped or started.
+This will start Atlas Local, and keep the data when stopped or started.
 
 You can then connect to it by setting the environment variable with the connection string:
 ```shell
-export VECTACTOE_MONGO_URL="mongodb://localhost:27025/VecTacToe?directConnection=true"
+export VECTACTOE_MONGO_URL="mongodb://localhost:27017/VecTacToe?directConnection=true"
 ```
 
 If you are on a Mac using ZSH you can also add the above line to your `.zshrc` file to make it permanent:
 ```shell
-echo 'export VECTACTOE_MONGO_URL="mongodb://localhost:27025/VecTacToe?directConnection=true"' >> ~/.zshrc
+echo 'export VECTACTOE_MONGO_URL="mongodb://localhost:27017/VecTacToe?directConnection=true"' >> ~/.zshrc
 ```
