@@ -5,6 +5,7 @@ import { Transcript } from './components/Transcript';
 import { GameStatus } from './components/GameStatus';
 import { Suggestion } from './components/Suggestion';
 import { Help } from './components/Help';
+import { Mql } from './components/Mql';
 import { type Player, type Move, opposingPlayer } from './VecTacToe';
 
 
@@ -19,6 +20,7 @@ export function App() {
   const [player, setPlayer] = useState<Player>('X');
   const [winner, setWinner] = useState<Player | null>(null);
   const [advice, setAdvice] = useState<any>(null);
+
 
   const handleCellClick = async (cellId: Move) => {
 
@@ -57,7 +59,7 @@ export function App() {
   };
 
   function undoLastMove(cellId: number) {
-    
+
     moves[cellId] = null;
     setPlays(plays.slice(0, -1));
     setMoves(moves);
@@ -88,25 +90,24 @@ export function App() {
         </button>
       </div>
 
-      <div className="w-full max-w-4xl mx-auto">
-        <h1 className="text-5xl font-bold text-center mb-4 text-cyan-400">Vector-Tac-Toe</h1>
-        <div className="flex justify-center items-start space-x-8 p-4 w-full">
-          <Board
-            sequence={moves}
-            player={player}
-            winner={winner}
-            onCellClick={handleCellClick} />
+      <h1 className="text-5xl font-bold text-center mb-4 text-cyan-400">Vector-Tac-Toe</h1>
 
-          <Transcript plays={plays}></Transcript>
+      <div className="flex flex-row items-start space-x-8">
+        {/* <Mql pipeline={advice?.pipeline} /> */}
+        <div className="flex flex-col items-center space-y-4">
+          <div className="flex justify-center items-start space-x-8">
+            <Board
+              sequence={moves}
+              player={player}
+              winner={winner}
+              onCellClick={handleCellClick} />
+            <Transcript plays={plays}></Transcript>
+          </div>
+          <GameStatus winner={winner} moves={moves} player={player}></GameStatus>
+          <Suggestion advice={advice}></Suggestion>
+          <Help></Help>
         </div>
-        <GameStatus winner={winner} moves={moves} player={player}></GameStatus>
       </div>
-      <div>
-
-        <Suggestion advice={advice}></Suggestion>
-      </div>
-      <div><Help></Help></div>
     </div>
   );
 }
-

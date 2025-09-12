@@ -1,7 +1,10 @@
 
+import { createEmbedding } from "@/VecTacToe";
 import { MiniBoard } from "./MiniBoard";
 export function Suggestion({ advice }) {
 
+  const embedding = advice?.pipeline[0]?.$vectorSearch?.queryVector?.join('') || ""
+  
   function adviceText(advice) {
     const moveText = advice?.suggestion.move ? "Play cell " + advice.suggestion.move : "No suggested move."
     return `✨ ${moveText}, thinking "${advice?.suggestion.strategy}"`
@@ -11,6 +14,7 @@ export function Suggestion({ advice }) {
   return advice ? (
     <div className="text-start font-semibold text-green-400 w-full">
       <div className="m-2 text-yellow-300">{adviceText(advice)}</div>
+      <div className="m-2 text-blue-300">{embedding}</div>
       <ul className="">
         {advice.possibilities.map((p, i) => (
           <li id={i} className="border-b-1 border-b-gray-600">

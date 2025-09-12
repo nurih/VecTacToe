@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { buildBoard, buildVectorSearchQuery, canBe, pickNextMove, type Board , type Move, type Possiblity} from "./VecTacToe";
+import { buildBoard, buildVectorSearchQuery, canBe, pickNextMove, type Board, type Move, type Possiblity } from "./VecTacToe";
 
 const client = new MongoClient(process.env.VECTACTOE_MONGO_URL!);
 
@@ -26,17 +26,18 @@ class GameServer {
 
     const queryResult = await collection.aggregate(pipeline).toArray();
 
-    const possibilities = queryResult.map(r=> ({...r, playable: canBe(currentBoard, r.board)} as Possiblity))
+    const possibilities = queryResult.map(r => ({ ...r, playable: canBe(currentBoard, r.board) } as Possiblity))
 
     console.log('Docs', queryResult.length);
     console.log('Possibilities', possibilities?.length);
 
     const suggestion = pickNextMove(player, currentBoard, possibilities);
 
-    return {      
+    return {
       currentBoard: currentBoard.join(''),
       suggestion,
-      possibilities
+      possibilities,
+      pipeline
     }
   }
 }
