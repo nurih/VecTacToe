@@ -6,6 +6,8 @@ import { GameStatus } from './components/GameStatus';
 import { Suggestion } from './components/Suggestion';
 import { Help } from './components/Help';
 import { Mql } from './components/Mql';
+import { Links } from './components/Links';
+import restartIcon from './game-restart.svg'
 import { type Player, type Move, opposingPlayer } from './VecTacToe';
 
 
@@ -81,16 +83,18 @@ export function App() {
     <div className="bg-gray-900 text-white min-h-screen 
     flex flex-col items-center justify-center font-sans p-4 relative">
 
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex flex-row space-x-2">
+        <Links></Links>
         <button
           onClick={handleReset}
-          className="bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105"
-        >
-          Reset Game
+          className="bg-green-800 hover:bg-red-800 text-gray-900 font-bold p-3 rounded-full shadow-lg transition-transform transform hover:scale-105"
+        ><img src={restartIcon} className='scale-160' alt="Restart Game" aria-label='Restart Game' />
         </button>
       </div>
 
-      <h1 className="text-5xl font-bold text-center mb-4 text-cyan-400">Vector-Tac-Toe</h1>
+      <div className='flex flex-row items-start m-8 w-full justify-start'>
+        <h2 className="text-4xl font-bold text-cyan-400">Vector Tac Toe</h2>
+      </div>
 
       <div className="flex flex-row items-start space-x-8">
         {/* <Mql pipeline={advice?.pipeline} /> */}
