@@ -1,14 +1,13 @@
-import { useState } from 'react';
-import { checkWinner } from './components/VecTacToe';
+import { useState, useEffect } from 'react';
 import { Board } from './components/Board';
 import { Transcript } from './components/Transcript';
 import { GameStatus } from './components/GameStatus';
 import { Suggestion } from './components/Suggestion';
 import { Help } from './components/Help';
-import { Mql } from './components/Mql';
 import { Links } from './components/Links';
+import { PlayerSetup } from './components/PlayerSetup';
 import restartIcon from './game-restart.svg'
-import { type Player, type Move, opposingPlayer } from './VecTacToe';
+import { type Player, type Move, opposingPlayer, judge } from './VecTacToe';
 
 
 export function App() {
@@ -17,12 +16,28 @@ export function App() {
     player: Player;
   };
 
+  const [gameStarted, setGameStarted] = useState(false);
+  const [username, setUsername] = useState<string>('');
+  const [userPlayer, setUserPlayer] = useState<Player>('X');
   const [moves, setMoves] = useState<Array<Player>>(Array(9).fill(null));
   const [plays, setPlays] = useState<Play[]>([]);
   const [player, setPlayer] = useState<Player>('X');
   const [winner, setWinner] = useState<Player | null>(null);
   const [advice, setAdvice] = useState<any>(null);
 
+  useEffect(() => {
+    const isGameOver = winner || plays.length === 9;
+    if (isGameOver && username) {
+      sendGameStats();
+    }
+  }, [winner, plays.length]);
+
+  const handleGameStart = (name: string, choice: Player) => {
+    setUsername(name);
+    setUserPlayer(choice);
+    setGameStarted(true);
+    setPlayer('X'); // Game always starts with X
+  };
 
   const handleCellClick = async (cellId: Move) => {
 
@@ -41,7 +56,7 @@ export function App() {
     const newPlays = [...plays, { cellId, player }];
     setPlays(newPlays)
 
-    const newWinner = checkWinner(newMoves, cellId);
+    const newWinner = judge(newMoves, cellId);
     if (newWinner) {
       // game won, over.
       setWinner(newWinner);
@@ -55,9 +70,22 @@ export function App() {
 
   const handleReset = () => {
     setMoves(Array(9).fill(null));
-    setPlays([])
+    setPlays([]);
     setPlayer('X');
     setWinner(null);
+    setAdvice(null);
+    setGameStarted(false);
+    setUsername('');
+  };
+
+  const sendGameStats = async () => {
+    await fetch('/api/stats', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, plays, winner, userPlayer }),
+    });
   };
 
   function undoLastMove(cellId: number) {
@@ -66,6 +94,7 @@ export function App() {
     setPlays(plays.slice(0, -1));
     setMoves(moves);
     setPlayer(opposingPlayer(player));
+    setWinner(null); // In case we undo a winning move
   }
 
   async function getSuggestions(plays: Play[]) {
@@ -79,9 +108,13 @@ export function App() {
     }
   }
 
+  const playBill = () => `VTT plays "${userPlayer === 'X' ? 'O' : 'X'}" | ${username} plays "${userPlayer}"`
+
+
   return (
     <div className="bg-gray-900 text-white min-h-screen 
-    flex flex-col items-center justify-center font-sans p-4 relative">
+    flex flex-col items-center justify-center font-sans p-4 relative"
+    >
 
       <div className="absolute top-4 right-4 flex flex-row space-x-2">
         <Links></Links>
@@ -92,26 +125,32 @@ export function App() {
         </button>
       </div>
 
-      <div className='flex flex-row items-start m-8 w-full justify-start'>
-        <h2 className="text-4xl font-bold text-cyan-400">Vector Tac Toe</h2>
+      <div className='flex flex-col m-8 w-full items-start'>
+        <h2 className="text-6xl font-bold text-cyan-400">Vector Tac Toe</h2>
+        {gameStarted && (
+          <h3 className="text-2xl font-bold text-green-200 mt-2">{playBill()}</h3>
+        )}
       </div>
 
-      <div className="flex flex-row items-start space-x-8">
-        {/* <Mql pipeline={advice?.pipeline} /> */}
-        <div className="flex flex-col items-center space-y-4">
-          <div className="flex justify-center items-start space-x-8">
-            <Board
-              sequence={moves}
-              player={player}
-              winner={winner}
-              onCellClick={handleCellClick} />
-            <Transcript plays={plays}></Transcript>
+      {!gameStarted ? (
+        <PlayerSetup onGameStart={handleGameStart} />
+      ) : (
+        <div className="flex flex-row items-start space-x-8">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="flex justify-center items-start space-x-8">
+              <Board
+                sequence={moves}
+                player={player}
+                winner={winner}
+                onCellClick={handleCellClick} />
+              <Transcript plays={plays}></Transcript>
+            </div>
+            <GameStatus winner={winner} moves={moves} player={player} username={username} userPlayer={userPlayer}></GameStatus>
+            <Suggestion advice={advice}></Suggestion>
           </div>
-          <GameStatus winner={winner} moves={moves} player={player}></GameStatus>
-          <Suggestion advice={advice}></Suggestion>
-          <Help></Help>
         </div>
-      </div>
+      )}
+      <Help></Help>
     </div>
   );
 }
