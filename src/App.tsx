@@ -145,7 +145,7 @@ export function App() {
                 onCellClick={handleCellClick} />
               <Transcript plays={plays}></Transcript>
             </div>
-            <GameStatus winner={winner} moves={moves} player={player} username={username} userPlayer={userPlayer}></GameStatus>
+            <GameStatus winner={winner} moves={moves} piece={player} username={username} userPiece={userPlayer}></GameStatus>
             <Suggestion advice={advice}></Suggestion>
           </div>
         </div>
