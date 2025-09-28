@@ -18,7 +18,7 @@ export function App() {
 
   const [gameStarted, setGameStarted] = useState(false);
   const [username, setUsername] = useState<string>('');
-  const [userPlayer, setUserPlayer] = useState<Player>('X');
+  const [userPiece, setUserPiece] = useState<Player>('X');
   const [moves, setMoves] = useState<Array<Player>>(Array(9).fill(null));
   const [plays, setPlays] = useState<Play[]>([]);
   const [player, setPlayer] = useState<Player>('X');
@@ -34,7 +34,7 @@ export function App() {
 
   const handleGameStart = (name: string, choice: Player) => {
     setUsername(name);
-    setUserPlayer(choice);
+    setUserPiece(choice);
     setGameStarted(true);
     setPlayer('X'); // Game always starts with X
   };
@@ -84,7 +84,7 @@ export function App() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, plays, winner, userPlayer }),
+      body: JSON.stringify({ username, plays, winner, userPiece }),
     });
   };
 
@@ -108,7 +108,7 @@ export function App() {
     }
   }
 
-  const playBill = () => `VTT plays "${userPlayer === 'X' ? 'O' : 'X'}" | ${username} plays "${userPlayer}"`
+  const playBill = () => `VTT plays "${userPiece === 'X' ? 'O' : 'X'}" | ${username} plays "${userPiece}"`
 
 
   return (
@@ -145,7 +145,7 @@ export function App() {
                 onCellClick={handleCellClick} />
               <Transcript plays={plays}></Transcript>
             </div>
-            <GameStatus winner={winner} moves={moves} piece={player} username={username} userPiece={userPlayer}></GameStatus>
+            <GameStatus winner={winner} moves={moves} piece={player} username={username} userPiece={userPiece}></GameStatus>
             <Suggestion advice={advice}></Suggestion>
           </div>
         </div>

@@ -40,6 +40,17 @@ class GameServer {
       pipeline
     }
   }
+
+  async saveStats(gameStats: any) {
+    await client.connect()
+    const collection = client.db().collection("vec_tac_toe_stats");
+    console.log(`Connected. Collection is ${collection.namespace}`)
+
+    const result = await collection.insertOne(gameStats)
+
+    return result
+
+  }
 }
 
 export { GameServer }

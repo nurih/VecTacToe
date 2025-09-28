@@ -24,6 +24,17 @@ const server = serve({
         ...candidateData
       });
     },
+    "/api/stats": {
+      POST: async req => {
+        const data = await req.json();
+        console.log('Received game stats:', data);
+        await gameServer.saveStats(data)
+        return Response.json({
+          ok: true,
+          message: "Stats received successfully"
+        });
+      },
+    },
   },
 
   development: process.env.NODE_ENV !== "production" && {
