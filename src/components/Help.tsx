@@ -18,7 +18,7 @@ export function Help() {
       </button>
 
       <div
-        className={`fixed inset-y-0 right-0 w-80 bg-gray-900 text-white p-6 shadow-xl transform transition-transform duration-300 ease-in-out z-40
+        className={`fixed inset-y-0 right-0 w-120 bg-gray-900 text-white p-4 shadow-xl transform transition-transform duration-300 ease-in-out z-40
           ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <h2 className="text-3xl font-bold mb-6 text-blue-400">How to Play</h2>
@@ -42,6 +42,16 @@ export function Help() {
           <p className="text-sm text-gray-400 border-t-1 border-t-solid">
             The AI prioritizes winning moves, then blocking moves, then
             random empty cells if no strategic move is found.)
+          </p>
+          <h2>Possible Plays Interpretation</h2>
+          <p>The list of possible plays has the following visual cues:
+            <ul>
+              <li className="border-b-1 border-t-1 border-l-4 border-l-solid border-l-green-400">🏆: Current player is the winner in this similar board</li>
+              <li className="border-b-1 border-t-1">⚖️: Similar board ends with a tie - no winner.</li>
+              <li className="border-b-1 border-t-1 border-l-4 border-l-solid border-l-green-400">Green Bar on left: Current player wins in that case</li>
+              <li className="border-b-1 border-t-1 border-r-4 border-r-solid border-r-green-400">Green Bar on right: This game can end up in this board arrangement</li>
+              <li className="border-b-1 border-t-1 border-r-4 border-r-solid border-r-red-400">Red Bar on right: This game cannot end up in this board arrangement</li>
+            </ul>
           </p>
         </div>
       </div>
