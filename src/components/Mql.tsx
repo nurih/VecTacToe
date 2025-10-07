@@ -21,7 +21,7 @@ export const Mql: FC<MqlProps> = ({ pipeline }) => {
   };
 
   return (
-    <div className="w-[600px] bg-black p-4 overflow-y-auto">
+    <div className="w-[800px] bg-black p-4 overflow-y-auto">
       <pre className="font-mono text-md text-green-400 whitespace-pre-wrap break-words">{format(pipeline)}</pre>
     </div>
   );
