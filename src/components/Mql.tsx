@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { type FC } from "react";
 
 type MqlProps = {
   pipeline: any[] | null | undefined;
@@ -22,7 +22,7 @@ export const Mql: FC<MqlProps> = ({ pipeline }) => {
 
   return (
     <div className="w-[600px] bg-black p-4 overflow-y-auto">
-      <pre className="font-mono text-md text-green-400">{format(pipeline)}</pre>
+      <pre className="font-mono text-md text-green-400 whitespace-pre-wrap break-words">{format(pipeline)}</pre>
     </div>
   );
 };
